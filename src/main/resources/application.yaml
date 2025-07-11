@@ -1,0 +1,19 @@
+spring:
+  application:
+    name: PlatMovie
+
+  datasource:
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASS}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
