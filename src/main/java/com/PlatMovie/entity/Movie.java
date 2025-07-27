@@ -28,7 +28,7 @@ public class Movie {
     private String description;
 
     @Column(name = "release_date")
-    private LocalDate relaseDate;
+    private LocalDate releaseDate;
 
     private double rating;
 
