@@ -5,20 +5,24 @@ import com.PlatMovie.controller.request.MovieRequest;
 import com.PlatMovie.controller.response.MovieResponse;
 import com.PlatMovie.entity.Movie;
 import com.PlatMovie.service.MovieService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/PlatMovie/movie")
 @RequiredArgsConstructor
 public class MovieController {
+
     private final MovieService movieService;
 
     @PostMapping
-    public ResponseEntity<MovieResponse> save(@RequestBody MovieRequest request){
+    public ResponseEntity<MovieResponse> save(@Valid @RequestBody MovieRequest request){
         Movie savedMovie = movieService.save(MovieMapper.toMovie(request));
         return ResponseEntity.ok(MovieMapper.toMovieResponse(savedMovie));
     }
@@ -30,32 +34,38 @@ public class MovieController {
                 .map(movie -> MovieMapper.toMovieResponse(movie))
                 .toList());
     }
+
     @GetMapping("/{id}")
-    public ResponseEntity<MovieResponse> getMovieByid(long id){
-        return movieService.getMovieId(id)
+    public ResponseEntity<MovieResponse> findById(@PathVariable Long id){
+        return movieService.findById(id)
                 .map(movie -> ResponseEntity.ok(MovieMapper.toMovieResponse(movie)))
                 .orElse(ResponseEntity.notFound().build());
     }
+
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteMovieById(@PathVariable long id) {
-        return movieService.getMovieId(id)
-                .map(movie  -> {
-                    movieService.deleteMovieId(id);
-                    return ResponseEntity.ok("O ID " + movie.getId() + "  foi deletado com sucesso.");
-                })
-                .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<Void> deleteMovieById(@PathVariable Long id) {
+        Optional<Movie> optMovie = movieService.findById(id);
+        if (optMovie.isPresent()){
+            movieService.delete(id);
+            return ResponseEntity.noContent().build();
+
+        }
+        return ResponseEntity.notFound().build();
     }
+
     @PutMapping("/{id}")
-    public ResponseEntity<String> updateMovieById(@PathVariable long id, @RequestBody MovieRequest request) {
-        return movieService.getMovieId(id)
-                .map(existingMovie -> {
-                    Movie updatedMovie = MovieMapper.toMovie(request);
-                    updatedMovie.setId(existingMovie.getId());
+    public ResponseEntity<MovieResponse> updateMovieById(@PathVariable long id,@Valid @RequestBody MovieRequest request) {
+        return movieService.update(id, MovieMapper.toMovie(request))
+                .map(movie -> ResponseEntity.ok(MovieMapper.toMovieResponse(movie)))
+                            .orElse(ResponseEntity.notFound().build());
+    }
 
-                    movieService.updateMovie(updatedMovie);
+    @GetMapping("/search")
+    public ResponseEntity<List<MovieResponse>> findByCategory(@RequestParam Long category){
+        return ResponseEntity.ok(movieService.findByCategory(category)
+                    .stream()
+                    .map(MovieMapper::toMovieResponse)
+                    .toList());
 
-                    return ResponseEntity.ok("Filme com ID " + id + " atualizado com sucesso.");
-                })
-                .orElse(ResponseEntity.notFound().build());
     }
 }

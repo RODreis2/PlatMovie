@@ -20,11 +20,11 @@ public class StreamingService {
         return repository.save(streaming);
     }
 
-    public Optional<Streaming> findStreamingById(long id) {
+    public Optional<Streaming> findStreamingById(Long id) {
         return repository.findById(id);
     }
 
-    public void deleteStreamingById(long id) {
+    public void deleteStreamingById(Long id) {
         repository.deleteById(id);
     }
 }

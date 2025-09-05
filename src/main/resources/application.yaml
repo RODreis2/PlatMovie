@@ -18,6 +18,12 @@ spring:
     enabled: true
     baseline-on-migrate: true
 
-  PlatMovie:
-      security:
-        secret: palavra-secreta
+springdoc:
+  api-docs:
+    path: /api/api-docs
+  swagger-ui:
+    path: /swagger/index.html
+
+PlatMovie:
+  security:
+    secret: palavra-secreta

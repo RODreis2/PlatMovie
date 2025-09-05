@@ -6,6 +6,7 @@ import com.PlatMovie.controller.request.StreamingRequest;
 import com.PlatMovie.controller.response.StreamingResponse;
 import com.PlatMovie.entity.Streaming;
 import com.PlatMovie.service.StreamingService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,7 @@ public class StreamingController {
     }
 
     @PostMapping
-    public ResponseEntity<StreamingResponse> saveStreaming(@RequestBody StreamingRequest request) {
+    public ResponseEntity<StreamingResponse> saveStreaming(@Valid @RequestBody StreamingRequest request) {
         Streaming newStreaming = StreamingMapper.toStreaming(request);
         Streaming savedStreaming = streamingService.saveStreaming(newStreaming);
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -37,14 +38,14 @@ public class StreamingController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<StreamingResponse> getStreamingById(@PathVariable long id) {
+    public ResponseEntity<StreamingResponse> getStreamingById(@PathVariable Long id) {
         return streamingService.findStreamingById(id)
                 .map(streaming -> ResponseEntity.ok(StreamingMapper.toStreamingResponse(streaming)))
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteStreamingById(@PathVariable long id) {
+    public ResponseEntity<String> deleteStreamingById(@PathVariable Long id) {
         return streamingService.findStreamingById(id)
                 .map(streaming -> {
                     streamingService.deleteStreamingById(id);
